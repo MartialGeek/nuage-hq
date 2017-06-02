@@ -1,10 +1,11 @@
 'use strict';
 
-const express = require('express');
 const PORT = 8000;
-const app = express();
+
+const app = require('express')();
 const nodeCouchDb = require('node-couchdb');
-const couch = new nodeCouchDb({
+
+const couchdb = new nodeCouchDb({
     host: 'couchdb',
     auth: {
         user: 'root',
@@ -12,33 +13,14 @@ const couch = new nodeCouchDb({
     }
 });
 
-app.get('/', (req, res) => {
-    res.send('Hello World!\n');
-});
+const FrontController = require('./src/controller/FrontController');
+const DatabaseController = require('./src/controller/DatabaseController');
 
-app.get('/db/', (req, res) => {
-    couch
-        .listDatabases()
-        .then(dbs => {
-            res.send(dbs);
-        }, err => {
-            console.error(err);
-            res.status(500).send(err);
-        });
-});
+app.get('/', new FrontController().indexAction);
 
-app.post('/db/:dbName', (req, res) => {
-    const dbName = req.params.dbName;
-
-    couch
-        .createDatabase(dbName)
-        .then(() => {
-            res.status(201).send(`Database ${dbName} created`);
-        }, err => {
-            console.error(err);
-            res.status(500).send(err);
-        });
-});
+const dbController = new DatabaseController(couchdb);
+app.get('/db/', dbController.listAction);
+app.post('/db/:dbName', dbController.createAction);
 
 app.listen(PORT);
 console.log(`Running on port ${PORT}`);
