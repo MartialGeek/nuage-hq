@@ -4,4 +4,6 @@ class FrontController {
     }
 }
 
-module.exports = FrontController;
+module.exports = () => {
+    return new FrontController();
+};

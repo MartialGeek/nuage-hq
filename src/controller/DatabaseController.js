@@ -30,4 +30,6 @@ class DatabaseController {
     }
 }
 
-module.exports = DatabaseController;
+module.exports = (couchdb) => {
+    return new DatabaseController(couchdb);
+};

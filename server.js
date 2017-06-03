@@ -13,14 +13,13 @@ const couchdb = new nodeCouchDb({
     }
 });
 
-const FrontController = require('./src/controller/FrontController');
-const DatabaseController = require('./src/controller/DatabaseController');
+const frontController = require('./src/controller/FrontController')();
+const dbController = require('./src/controller/DatabaseController')(couchdb);
 
-app.get('/', new FrontController().indexAction);
+app.get('/', frontController.indexAction.bind(frontController));
 
-const dbController = new DatabaseController(couchdb);
-app.get('/db/', dbController.listAction);
-app.post('/db/:dbName', dbController.createAction);
+app.get('/db/', dbController.listAction.bind(dbController));
+app.post('/db/:dbName', dbController.createAction.bind(dbController));
 
 app.listen(PORT);
 console.log(`Running on port ${PORT}`);
