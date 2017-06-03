@@ -8,3 +8,14 @@ services:
             - .:/app
         ports:
             - 8000:8000
+    couchdb:
+        image: klaemo/couchdb:2.0.0
+        volumes:
+            - couchdb:/opt/couchdb/data
+        ports:
+            - 5984:5984
+        environment:
+            COUCHDB_USER: root
+            COUCHDB_PASSWORD: root
+volumes:
+    couchdb:
