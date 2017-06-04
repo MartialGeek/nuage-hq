@@ -1,6 +1,6 @@
 class FrontController {
     indexAction(req, res) {
-        res.send('Hello World\n');
+        res.render('front/index');
     }
 }
 
