@@ -2,7 +2,7 @@
 
 import { createStore, combineReducers } from 'redux';
 import ReactDOM from 'react-dom';
-import React from 'react';
+import React, { Component } from 'react';
 import expect from 'expect';
 import deepFreeze from 'deep-freeze';
 
@@ -58,13 +58,12 @@ const todoApp = combineReducers({
 
 const store = createStore(todoApp);
 
-const FilterLink = ({
-  filter,
-  currentFilter,
+const Link = ({
+  active,
   children,
   onClick
 }) => {
-  if (filter === currentFilter) {
+  if (active) {
     return (
       <span>{children}</span>
     );
@@ -74,13 +73,46 @@ const FilterLink = ({
     <a href='#'
       onClick={e => {
         e.preventDefault();
-        onClick(filter);
+        onClick();
       }}
     >
       {children}
     </a>
   );
 };
+
+class FilterLink extends Component {
+  componentDidMount() {
+    this.unsubscribe = store.subscribe(() => {
+      this.forceUpdate();
+    });
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+
+  render() {
+    const props = this.props;
+    const state = store.getState();
+
+    return (
+      <Link
+        active={
+          props.filter === state.visibilityFilter
+        }
+        onClick={() =>
+          store.dispatch({
+            type: 'SET_VISIBILITY_FILTER',
+            filter: props.filter
+          })
+        }
+      >
+        {props.children}
+      </Link>
+    );
+  }
+}
 
 const getVisibleTodos = (todos, filter) => {
   switch (filter) {
@@ -120,16 +152,20 @@ const TodoList = ({
   </ul>
 );
 
-const AddTodo = ({
-  onAddSubmit
-}) => {
+let todoId = 0;
+
+const AddTodo = () => {
   let input;
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        onAddSubmit(input.value);
+        store.dispatch({
+          type: 'ADD_TODO',
+          id: todoId++,
+          text: input.value
+        })
         input.value = '';
       }}
       >
@@ -143,87 +179,73 @@ const AddTodo = ({
   );
 };
 
-const Footer = ({
-  visibilityFilter,
-  onFilterClick
-}) => (
+const Footer = () => (
   <p>
     Show:
     {' '}
     <FilterLink
       filter='SHOW_ALL'
-      currentFilter={visibilityFilter}
-      onClick={onFilterClick}
     >
       All
     </FilterLink>
     {' '}
     <FilterLink
       filter='SHOW_ACTIVE'
-      currentFilter={visibilityFilter}
-      onClick={onFilterClick}
     >
       Active
     </FilterLink>
     {' '}
     <FilterLink
       filter='SHOW_COMPLETED'
-      currentFilter={visibilityFilter}
-      onClick={onFilterClick}
     >
       Completed
     </FilterLink>
   </p>
 );
 
-let todoId = 0;
+class VisibleTodoList extends Component {
+  componentDidMount() {
+    this.unsubscribe = store.subscribe(() => {
+      this.forceUpdate();
+    });
+  }
 
-const TodoApp = ({
-  todos,
-  visibilityFilter
-}) => (
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+
+  render() {
+    const props = this.props;
+    const state = store.getState();
+
+    return (
+      <TodoList
+        todos={
+          getVisibleTodos(
+            state.todos,
+            state.visibilityFilter
+          )
+        }
+        onTodoClick={id =>
+          store.dispatch({
+            type: 'TOGGLE_TODO',
+            id
+          })
+        }
+      />
+    );
+  }
+}
+
+const TodoApp = () => (
   <div>
-    <AddTodo
-      onAddSubmit={text =>
-        store.dispatch({
-          type: 'ADD_TODO',
-          id: todoId++,
-          text
-        })
-      }
-    />
-    <TodoList
-      todos={getVisibleTodos(
-        todos,
-        visibilityFilter
-      )}
-      onTodoClick={id =>
-        store.dispatch({
-          type: 'TOGGLE_TODO',
-          id
-        })
-      }
-    />
-    <Footer
-      visibilityFilter={visibilityFilter}
-      onFilterClick={filter =>
-        store.dispatch({
-          type: 'SET_VISIBILITY_FILTER',
-          filter
-        })
-      }
-    />
+    <AddTodo />
+    <VisibleTodoList />
+    <Footer />
   </div>
 );
 
-const render = () => {
-  ReactDOM.render(
-    <TodoApp
-      {...store.getState()}
-    />,
-    document.getElementById('root')
-  );
-};
-
-store.subscribe(render);
-render();
+ReactDOM.render(
+  <TodoApp />,
+  document.getElementById('root')
+);
