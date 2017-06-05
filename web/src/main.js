@@ -64,7 +64,7 @@ const FilterLink = ({ filter, currentFilter, children }) => {
       <span>{children}</span>
     );
   }
-  
+
   return (
     <a href='#'
       onClick={e => {
@@ -107,19 +107,25 @@ class TodoApp extends Component {
 
     return (
       <div>
-        <input ref={node => {
-          this.input = node;
-        }} />
-        <button onClick={() => {
-          store.dispatch({
-            type: 'ADD_TODO',
-            id: todoId++,
-            text: this.input.value
-          });
-          this.input.value = '';
-        }}>
-          Add todo
-        </button>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            store.dispatch({
+              type: 'ADD_TODO',
+              id: todoId++,
+              text: this.input.value
+            });
+
+            this.input.value = '';
+          }}
+          >
+          <input ref={node => {
+            this.input = node;
+          }} />
+          <button type="submit">
+            Add todo
+          </button>
+        </form>
         <ul>
           {visibleTodos.map(todo =>
             <li
@@ -166,7 +172,6 @@ class TodoApp extends Component {
 }
 
 const render = () => {
-  console.log(store.getState());
   ReactDOM.render(
     <TodoApp
       {...store.getState()}
