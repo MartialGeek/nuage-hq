@@ -1,3 +1,5 @@
+import { v4 } from 'node-uuid';
+
 export const toggleTodo = (id) => ({
   type: 'TOGGLE_TODO',
   id
@@ -11,6 +13,6 @@ export const setVisibilityFilter = (filter) => ({
 let todoId = 0;
 export const addTodo = (text) => ({
   type: 'ADD_TODO',
-  id: todoId++,
+  id: v4(),
   text
 });

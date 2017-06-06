@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "express": "^4.15.3",
+    "lodash": "^4.17.4",
     "node-couchdb": "^1.1.1",
+    "node-uuid": "^1.4.8",
     "pug": "^2.0.0-rc.2",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
