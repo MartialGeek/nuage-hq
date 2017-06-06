@@ -57,6 +57,29 @@ const todoApp = combineReducers({
   visibilityFilter
 });
 
+const toggleTodo = (id) => {
+  return {
+    type: 'TOGGLE_TODO',
+    id
+  };
+};
+
+const setVisibilityFilter = (filter) => {
+  return {
+    type: 'SET_VISIBILITY_FILTER',
+    filter
+  }
+};
+
+let todoId = 0;
+const addTodo = (text) => {
+  return {
+    type: 'ADD_TODO',
+    id: todoId++,
+    text
+  };
+};
+
 const Link = ({
   active,
   children,
@@ -95,10 +118,7 @@ const mapDispatchToLinkProps = (
 ) => {
   return {
     onClick: () => {
-      dispatch({
-        type: 'SET_VISIBILITY_FILTER',
-        filter: ownProps.filter
-      })
+      dispatch(setVisibilityFilter(ownProps.filter));
     }
   };
 };
@@ -146,7 +166,6 @@ const TodoList = ({
   </ul>
 );
 
-let todoId = 0;
 let AddTodo = ({ dispatch }) => {
   let input;
 
@@ -154,11 +173,7 @@ let AddTodo = ({ dispatch }) => {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        dispatch({
-          type: 'ADD_TODO',
-          id: todoId++,
-          text: input.value
-        })
+        dispatch(addTodo(input.value));
         input.value = '';
       }}
       >
@@ -209,10 +224,7 @@ const mapStateToTodoListProps = (state) => {
 const mapDispatchToTodoListProps = (dispatch) => {
   return {
     onTodoClick: (id) => {
-      dispatch({
-        type: 'TOGGLE_TODO',
-        id
-      })
+      dispatch(toggleTodo(id));
     }
   };
 };
