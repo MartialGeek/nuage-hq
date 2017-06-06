@@ -1,24 +1,13 @@
 'use strict';
 
-import { createStore } from 'redux';
 import ReactDOM from 'react-dom';
 import React from 'react';
-import { Provider } from 'react-redux';
-import todoApp from './reducers';
-import App from './components/App';
-import { loadState, saveState } from './localStorage';
-import throttle from 'lodash/throttle';
+import configureStore from './configureStore';
+import Root from './components/Root';
 
-const persistedData = loadState();
-const store = createStore(todoApp, persistedData);
-
-store.subscribe(throttle(() => {
-  saveState(store.getState());
-}, 1000));
+const store = configureStore();
 
 ReactDOM.render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
+  <Root store={store} />,
   document.getElementById('root')
 );
