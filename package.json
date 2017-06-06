@@ -14,10 +14,13 @@
     "lodash": "^4.17.4",
     "node-couchdb": "^1.1.1",
     "node-uuid": "^1.4.8",
+    "prop-types": "^15.5.10",
     "pug": "^2.0.0-rc.2",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-redux": "^5.0.5",
+    "react-router": "^4.1.1",
+    "react-router-dom": "^4.1.1",
     "redux": "^3.6.0"
   },
   "devDependencies": {
