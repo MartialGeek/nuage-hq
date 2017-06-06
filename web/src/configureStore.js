@@ -1,11 +1,11 @@
 import { createStore } from 'redux';
 import { loadState, saveState } from './localStorage';
 import throttle from 'lodash/throttle';
-import todoApp from './reducers';
+import combinedReducers from './reducers/combinedReducers';
 
 const configureStore = () => {
   const persistedData = loadState();
-  const store = createStore(todoApp, persistedData);
+  const store = createStore(combinedReducers, persistedData);
 
   store.subscribe(throttle(() => {
     saveState(store.getState());
