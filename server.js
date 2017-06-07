@@ -20,7 +20,7 @@ const couchdb = new nodeCouchDb({
 const frontController = require('./src/controller/FrontController')();
 const dbController = require('./src/controller/DatabaseController')(couchdb);
 
-app.get('/', frontController.indexAction.bind(frontController));
+app.get('/todo*', frontController.indexAction.bind(frontController));
 app.get('/db/', dbController.listAction.bind(dbController));
 app.post('/db/:dbName', dbController.createAction.bind(dbController));
 
